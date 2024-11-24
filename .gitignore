@@ -5,6 +5,7 @@
 # Session Data files
 .RData
 .RDataTmp
+.csv
 
 # User-specific files
 .Ruserdata
@@ -22,8 +23,8 @@
 .Rproj.user/
 
 # produced vignettes
-vignettes/*.html
-vignettes/*.pdf
+#vignettes/*.html
+#vignettes/*.pdf
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
@@ -40,10 +41,18 @@ vignettes/*.pdf
 .Renviron
 
 # pkgdown site
-docs/
+# docs/
 
 # translation temp files
 po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+/.quarto/
+.Rproj.user
+
+
+# custom
+R and Bioconductor based Workflow for Downstream Analysis of LFQ Food and Meat Proteomics Data_files
+.Rprofile

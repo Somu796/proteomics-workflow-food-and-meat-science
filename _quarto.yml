@@ -1,0 +1,14 @@
+project:
+  title: "R and Bioconductor based Workflow for Downstream Analysis of LFQ Food and Meat Proteomics Data"
+  type: website
+  output-dir: docs
+    
+execute: 
+  cache: true
+  
+editor: visual
+
+toc: true
+toc-depth: 4
+toc-title: "On this page"
+number-sections: true
