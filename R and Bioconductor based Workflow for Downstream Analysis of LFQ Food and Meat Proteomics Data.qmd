@@ -1,5 +1,5 @@
 ---
-title: "down stream proteomics workflow for meat science"
+title: "R and Bioconductor based Workflow for Downstream Analysis of LFQ Food and Meat Proteomics Data"
 author: "Sudipta Hazra"
 format:
   html:
