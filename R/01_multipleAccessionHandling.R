@@ -400,5 +400,31 @@ populateGeneNamesfromMultipleAccession <- function(gene_data,
 }              
   
 
-# column_names start with X fix that
+
+populateGeneNames <- function(gene_data,
+                              colName,
+                              delimiter,
+                              information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence",
+                              countAccession = countAccession,
+                              getGeneUniProt = getGeneUniProt,
+                              getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession,
+                              verbose_ = FALSE){
+
+  # if (countAccession(gene_data, colName, delimiter, endsWith = FALSE, verbose_) > 1){
+  #   populateGeneNamesfromMultipleAccession(f_data, "Accession", ",", information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", countAccession = countAccession, getGeneUniProt = getGeneUniProt, getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession, verbose_ = FALSE)
+  # } else if(countAccession(gene_data, colName, delimiter, endsWith = FALSE, verbose_) == 1){
+  #   getGeneInformationforMultipleAccession(gene_data, colName, delimiter, information, countAccession, getGeneUniProt, verbose_)
+  # }
+  
+  uniprot_inform  <- getGeneInformationforMultipleAccession(gene_data,
+                                         colName,
+                                         delimiter = "", # redundant
+                                         information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence",
+                                         countAccession = countAccession,
+                                         getGeneUniProt = getGeneUniProt,
+                                         getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession,
+                                         verbose_ = FALSE)
+  return(uniprot_inform)
+
+}
   

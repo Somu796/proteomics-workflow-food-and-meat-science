@@ -11,6 +11,21 @@ execute:
   cache: true
 ---
 
+## Summary
+
+Proteomics have been extensively used in meat science to understand the biochemistry of meat quality. Identified and quantified proteomics data obtained through processing with analytical software tools, such as Mascot and Progenesis QI, among others, serve as a common starting point for meat scientists to analyze shotgun proteomic data. However, a standardized workflow for the downstream statistical analysis and visualization of these factorial design datasets is lacking.
+
+We propose a comprehensive downstream workflow and create a reproducible document for analyzing relative label-free quantified (LFQ) meat proteomics data that can be easily executed and shared, enhancing the reproducibility and accessibility for meat scientists.
+
+## Nittiy-gritties
+
+We followed similar anatomy as [summarized experiments](https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html). It has three parts,
+1. `s_data` which consists of sample information,
+2. `quant_data` is the quantitative data,
+3. `f_data` is the feature data.
+
+User has to provide the `quant_data` and `s_data` in the correct format.
+
 [![](images/Summarized%20Experiment.png){fig-align="center" width="400"}](https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html)
 
 ## Parameters
@@ -19,7 +34,6 @@ execute:
 # do renv::restore() and renv:activate() as global setup
 
 # Import quant_data and sample_data as parameter
-
 feature_key_column <- "Accession" # comment it later
 quantdata_key_column <- "Accession"
 sample_key_column <- "sample" # quantCols (suggested names callouts)
@@ -27,6 +41,9 @@ sample_key_column <- "sample" # quantCols (suggested names callouts)
 # Instead only mention paths
 quant_data_path <- "data/quant_data.csv"
 s_data_path <- "data/sample_data.csv"
+
+# information from uniprot needed
+information <- "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence"
 
 # refernce for columns in sample data,
 
@@ -44,70 +61,60 @@ normalization_algo <- "center.median" #sum, max, center.mean, center.median, div
 
 ## Importing Data
 
-### Gene ID has multiple entries one cell
-
-#### Importing Raw Data
-
-```{r}
-# #| eval: false
-# 
-# pacman::p_load(tidyverse) 
-# quant_data <- read.csv("data/sample_lfq_data.csv")
-# # s_data <- read.csv("data/sample_metadata.csv") # sample_attributes
-```
-
-#### Enriching/populating the feature data
-
-```{r}
-# #| eval: false
-# 
-# # pacman::p_load(tidyverse, modules, httr, jsonlite) 
-# # multipleAccessionHandling <- use("R/01_multipleAccessionHandling.R")
-# source("R/01_multipleAccessionHandling.R")
-# 
-# 
-# f_quant_data <- getCleanAccession(quant_data, "Accession", "\\b[A-Za-z0-9]+(?=\\|)")
-# 
-# r_data <- populateGeneNamesfromMultipleAccession(f_data, "Accession", ",", information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", countAccession = countAccession, getGeneUniProt = getGeneUniProt, getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession, verbose_ = FALSE)
-
-```
-
-### 
-
-```{r}
-# #| eval: false
-# 
-# pacman::p_load(import, glue, httr, progress)
-# 
-# # write.csv(r_data[, c(1, 7:ncol(r_data))],"data/quant_data.csv", row.names = FALSE)
-# 
-# write.csv(r_data[, 1:6], "data/feature_data.csv", row.names = FALSE)
-```
-
-### Gene ID has single entries in cell
-
-#### Importing Raw Data
-
 ```{r}
 pacman::p_load(tidyverse)
 
-quant_data <-  read.csv(quant_data_path) #%>%  # LFQ quantified data
-  # column_to_rownames(var = feature_key_column) # make the first column as row name
+quant_data <- read.csv(quant_data_path) # LFQ quantified data
 
-f_data <- read.csv("data/feature_data.csv") #%>% # feature_attributes, primary key (unique) should be uniprot accession gene id
-  # column_to_rownames(var = feature_key_column)
-
-s_data <- read.csv(s_data_path) %>% 
+s_data <- read.csv(s_data_path) %>% # sample data
   mutate(across(all_of(sample_key_column), make.names)) %>%
-  # column_to_rownames(var = sample_key_column) %>% 
   dplyr::rename(quantCols = all_of(sample_key_column))
 ```
+
+## fetching features
+
+### Gene ID has single entries in cell
+
+```{r}
+#| eval: false
+
+pacman::p_load(tidyverse)
+source("R/01_multipleAccessionHandling.R")
+
+f_data <- populateGeneNames(quant_data) # fetching data from uniprot
+
+```
+```{r}
+#| echo: false
+
+f_data <- read.csv("data/feature_data.csv")
+```
+
+
+### Gene ID has multiple entries in cell
+
+```{r}
+#| eval: false
+
+pacman::p_load(tidyverse, modules, httr, jsonlite)
+source("R/01_multipleAccessionHandling.R")
+
+# fetching data for multiple accessions
+mquant_data <- populateGeneNamesfromMultipleAccession(quant_data, "Accession", ",", information = information, countAccession = countAccession, getGeneUniProt = getGeneUniProt, getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession, verbose_ = FALSE)
+
+
+quant_data <- mquant_data[, c(1, length(unlist(str_split(information, ",")))+1 :ncol(r_data))]
+f_data <- mquant_data[, 1:length(unlist(str_split(information, ",")))]
+
+```
+
 
 ## Preparing a QFeature object
 
 ### Creating the QFeature object
 
 ```{r}
+#| message: false
 
 pacman::p_load(BiocManager, BiocStyle) # will go to global environment
 pacman::p_load(QFeatures)
@@ -293,12 +300,12 @@ data <- addAssay(data,
 ##### Imputing missing values and visualization (modify later)
 
 ```{r}
-#| eval: false
+#| message: false
 source("R/02_QFeature_related functions.R")
 
 # fix the function
 visualize_imputation_density(data, 
-                             protein_column = NA_filtered_assayName, 
+                             assayName_ = log_NA_filtered_assayName, 
                              imputation_methods = c("knn", "zero", "MinDet", "bpca"),
                              colors = c("black", "red", "blue", "steelblue", "orange"),
                              legend_position = "topright")
@@ -420,7 +427,7 @@ for (label in colnames(labels)) {
            pca_data, 
            label, 
            labels, 
-           explained_variance = NULL))
+           explained_variance = explained_variance))
   
   plot_list[[paste0("fig_pca_Plot_", label)]] <- get(paste0("fig_pca_Plot_", label))
 }
@@ -482,6 +489,11 @@ suppressWarnings({
   p <- dim(matrix(1:(ncol(sample_dimensionaReduction)-1), nrow = 2))[1]
 })
 
+# plot_list[[1]]
+# ggsave("images/05_tSNE_stress_plot.pdf", dpi =1200)
+# plot_list[[2]]
+# ggsave("images/06_tSNE_fr_plot.pdf", dpi =1200)
+
 grid.arrange(grobs = plot_list, nrow = n, ncol = p) 
 
 ```
@@ -525,6 +537,11 @@ suppressWarnings({
   n <- dim(matrix(1:(ncol(sample_dimensionaReduction)-1), nrow = 2))[2]
   p <- dim(matrix(1:(ncol(sample_dimensionaReduction)-1), nrow = 2))[1]
 })
+
+# plot_list[[1]]
+# ggsave("images/07_tSNE_stress_plot.pdf", dpi =1200)
+# plot_list[[2]]
+# ggsave("images/08_tSNE_fr_plot.pdf", dpi =1200)
 
 grid.arrange(grobs = plot_list, nrow = n, ncol = p) 
 
@@ -646,9 +663,9 @@ FactorLevel.1 <- "Stress"
 FactorLevel.2 <- "NoStress"
 legend_title = "pre-slaughter \nstress condition"
 
+# ggsave("images/09_volcano_plot.pdf", dpi =1200)
 
 getVolcanoPlot(DAP_table_factor, FactorLevel.1, FactorLevel.2, mrlimit = 1.2, legend_title = legend_title)
-
 
 ```
 
@@ -723,8 +740,10 @@ upSet_data_stress <- stress_df %>%
 
 
 upset1 <- getUpSetPlot(upSet_data_nostress, title = "A)", fill_color = "#1F77B4")
+ggsave("plots/10_upset_stress_plot.pdf")
 
 upset2 <- getUpSetPlot(upSet_data_stress, title = "B)", fill_color = "#FF7F0E")
+ggsave("plots/11_upset_nostress_plot.pdf")
 
 grid.arrange(grobs = list(upset1, upset2), ncol = 2)
 
@@ -808,10 +827,12 @@ EFS_genes_filterby <- DAP_table_feature_data[[quantdata_key_column]][DAP_table_f
 
 EFS_volcano_data <- DAP_table_feature_data %>% 
   filter(.data[[quantdata_key_column]] %in% EFS_genes_filterby) %>% 
-  select(columns_for_volcanoplot)
+  select(all_of(columns_for_volcanoplot))
 
+# include the filter_by
 EFS_plot <- getVolcanoPlotEFS(DAP_table_factor, FactorLevel.1, FactorLevel.2, mrlimit = 1.2, pValue_Limit= 0.05, legend_title = legend_title, additional_data = EFS_volcano_data)
 
+#ggsave("images/13_EFS_plot2.pdf", dpi = 1200)
 grid.arrange(grobs = list(volcano_plot,EFS_plot), nrow = 1, ncol = 2)
 
 ```
@@ -820,7 +841,6 @@ grid.arrange(grobs = list(volcano_plot,EFS_plot), nrow = 1, ncol = 2)
 
 ```{r}
 #| eval: false
-#| echo: false
 
 # Create a ROC Curve based on the output from efs
 eval_tests <- efs_eval(data = EFS_data, efs_table = efs,

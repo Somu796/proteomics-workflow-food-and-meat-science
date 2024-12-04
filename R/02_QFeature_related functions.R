@@ -1,5 +1,5 @@
 visualize_imputation_density <- function(data, 
-                                         assayName_ = "NAfiltered_proteins", 
+                                         assayName_ = "log_NAfiltered_proteomics_data", 
                                          imputation_methods = c("knn", "zero", "MinDet", "bpca"),
                                          colors = c("black", "red", "blue", "steelblue", "orange"),
                                          legend_position = "topright") {

@@ -56,3 +56,7 @@ rsconnect/
 # custom
 R and Bioconductor based Workflow for Downstream Analysis of LFQ Food and Meat Proteomics Data_files
 .Rprofile
+
+# docs
+*.pdf
+*.svg

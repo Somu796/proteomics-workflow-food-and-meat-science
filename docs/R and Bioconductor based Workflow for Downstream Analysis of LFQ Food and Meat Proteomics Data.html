@@ -5,7 +5,7 @@
 <meta name="generator" content="quarto-1.6.37">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="author" content="Sudipta Hazra">
-<title>R and Bioconductor based Workflow for Downstream Analysis of LFQ Food and Meat Proteomics Data</title>
+<title>R and Bioconductor based Workflow for Downstream Analysis of LFQ Food and Meat Proteomics Data – Food and Meat Proteomics Downstream Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -55,11 +55,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./images/logo_food_data.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -69,11 +71,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-d7434848a11c812a7c353088f726a461.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
     "f",
@@ -97,84 +99,98 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script><link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 </head>
-<body>
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./images/logo_header.png" alt="" class="navbar-logo"></a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Food and Meat Proteomics Downstream Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Somu796"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-<li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters"><span class="header-section-number">1</span> Parameters</a></li>
+<li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary"><span class="header-section-number">1</span> Summary</a></li>
+  <li><a href="#nittiy-gritties" id="toc-nittiy-gritties" class="nav-link" data-scroll-target="#nittiy-gritties"><span class="header-section-number">2</span> Nittiy-gritties</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters"><span class="header-section-number">3</span> Parameters</a></li>
+  <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data"><span class="header-section-number">4</span> Importing Data</a></li>
   <li>
-<a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data"><span class="header-section-number">2</span> Importing Data</a>
+<a href="#fetching-features" id="toc-fetching-features" class="nav-link" data-scroll-target="#fetching-features"><span class="header-section-number">5</span> fetching features</a>
+  <ul>
+<li><a href="#gene-id-has-single-entries-in-cell" id="toc-gene-id-has-single-entries-in-cell" class="nav-link" data-scroll-target="#gene-id-has-single-entries-in-cell"><span class="header-section-number">5.1</span> Gene ID has single entries in cell</a></li>
+  <li><a href="#gene-id-has-multiple-entries-in-cell" id="toc-gene-id-has-multiple-entries-in-cell" class="nav-link" data-scroll-target="#gene-id-has-multiple-entries-in-cell"><span class="header-section-number">5.2</span> Gene ID has multiple entries in cell</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#preparing-a-qfeature-object" id="toc-preparing-a-qfeature-object" class="nav-link" data-scroll-target="#preparing-a-qfeature-object"><span class="header-section-number">6</span> Preparing a QFeature object</a>
+  <ul>
+<li><a href="#creating-the-qfeature-object" id="toc-creating-the-qfeature-object" class="nav-link" data-scroll-target="#creating-the-qfeature-object"><span class="header-section-number">6.1</span> Creating the QFeature object</a></li>
+  <li><a href="#inspecting-the-qfeature-object" id="toc-inspecting-the-qfeature-object" class="nav-link" data-scroll-target="#inspecting-the-qfeature-object"><span class="header-section-number">6.2</span> Inspecting the QFeature Object</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#pre-processing-of-the-data" id="toc-pre-processing-of-the-data" class="nav-link" data-scroll-target="#pre-processing-of-the-data"><span class="header-section-number">7</span> Pre-processing of the data</a>
   <ul>
 <li>
-<a href="#gene-id-has-multiple-entries-one-cell" id="toc-gene-id-has-multiple-entries-one-cell" class="nav-link" data-scroll-target="#gene-id-has-multiple-entries-one-cell"><span class="header-section-number">2.1</span> Gene ID has multiple entries one cell</a>
+<a href="#missing-value-handling" id="toc-missing-value-handling" class="nav-link" data-scroll-target="#missing-value-handling"><span class="header-section-number">7.1</span> Missing value Handling</a>
   <ul class="collapse">
-<li><a href="#importing-raw-data" id="toc-importing-raw-data" class="nav-link" data-scroll-target="#importing-raw-data"><span class="header-section-number">2.1.1</span> Importing Raw Data</a></li>
-  <li><a href="#enrichingpopulating-the-feature-data" id="toc-enrichingpopulating-the-feature-data" class="nav-link" data-scroll-target="#enrichingpopulating-the-feature-data"><span class="header-section-number">2.1.2</span> Enriching/populating the feature data</a></li>
+<li><a href="#missing-value-exploration-and-visualization" id="toc-missing-value-exploration-and-visualization" class="nav-link" data-scroll-target="#missing-value-exploration-and-visualization"><span class="header-section-number">7.1.1</span> Missing value exploration and visualization</a></li>
+  <li><a href="#missing-data-filterting" id="toc-missing-data-filterting" class="nav-link" data-scroll-target="#missing-data-filterting"><span class="header-section-number">7.1.2</span> Missing data filterting</a></li>
+  <li><a href="#missing-data-imputation" id="toc-missing-data-imputation" class="nav-link" data-scroll-target="#missing-data-imputation"><span class="header-section-number">7.1.3</span> Missing Data Imputation</a></li>
   </ul>
 </li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"><span class="header-section-number">2.2</span> </a></li>
+  <li><a href="#log-transformation" id="toc-log-transformation" class="nav-link" data-scroll-target="#log-transformation"><span class="header-section-number">7.2</span> Log transformation</a></li>
+  <li><a href="#normalisation" id="toc-normalisation" class="nav-link" data-scroll-target="#normalisation"><span class="header-section-number">7.3</span> Normalisation</a></li>
+  </ul>
+</li>
   <li>
-<a href="#gene-id-has-single-entries-in-cell" id="toc-gene-id-has-single-entries-in-cell" class="nav-link" data-scroll-target="#gene-id-has-single-entries-in-cell"><span class="header-section-number">2.3</span> Gene ID has single entries in cell</a>
+<a href="#exploratory-analysis" id="toc-exploratory-analysis" class="nav-link" data-scroll-target="#exploratory-analysis"><span class="header-section-number">8</span> Exploratory Analysis</a>
+  <ul>
+<li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages"><span class="header-section-number">8.1</span> Packages</a></li>
+  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization"><span class="header-section-number">8.2</span> Visualization</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#statistical-analysis" id="toc-statistical-analysis" class="nav-link" data-scroll-target="#statistical-analysis"><span class="header-section-number">9</span> Statistical Analysis</a>
+  <ul>
+<li><a href="#limma-analysis" id="toc-limma-analysis" class="nav-link" data-scroll-target="#limma-analysis"><span class="header-section-number">9.1</span> LIMMA Analysis</a></li>
+  <li><a href="#limma-result-visualization" id="toc-limma-result-visualization" class="nav-link" data-scroll-target="#limma-result-visualization"><span class="header-section-number">9.2</span> LIMMA Result Visualization</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#ensemble-feature-selection" id="toc-ensemble-feature-selection" class="nav-link" data-scroll-target="#ensemble-feature-selection"><span class="header-section-number">10</span> Ensemble Feature Selection</a>
+  <ul>
+<li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><span class="header-section-number">10.1</span> Data Preparation</a></li>
+  <li><a href="#performing-feature-selection" id="toc-performing-feature-selection" class="nav-link" data-scroll-target="#performing-feature-selection"><span class="header-section-number">10.2</span> Performing feature selection</a></li>
+  <li>
+<a href="#result-visualization" id="toc-result-visualization" class="nav-link" data-scroll-target="#result-visualization"><span class="header-section-number">10.3</span> Result Visualization</a>
   <ul class="collapse">
-<li><a href="#importing-raw-data-1" id="toc-importing-raw-data-1" class="nav-link" data-scroll-target="#importing-raw-data-1"><span class="header-section-number">2.3.1</span> Importing Raw Data</a></li>
-  </ul>
-</li>
-  </ul>
-</li>
-  <li>
-<a href="#preparing-a-qfeature-object" id="toc-preparing-a-qfeature-object" class="nav-link" data-scroll-target="#preparing-a-qfeature-object"><span class="header-section-number">3</span> Preparing a QFeature object</a>
-  <ul>
-<li><a href="#creating-the-qfeature-object" id="toc-creating-the-qfeature-object" class="nav-link" data-scroll-target="#creating-the-qfeature-object"><span class="header-section-number">3.1</span> Creating the QFeature object</a></li>
-  <li><a href="#inspecting-the-qfeature-object" id="toc-inspecting-the-qfeature-object" class="nav-link" data-scroll-target="#inspecting-the-qfeature-object"><span class="header-section-number">3.2</span> Inspecting the QFeature Object</a></li>
-  </ul>
-</li>
-  <li>
-<a href="#pre-processing-of-the-data" id="toc-pre-processing-of-the-data" class="nav-link" data-scroll-target="#pre-processing-of-the-data"><span class="header-section-number">4</span> Pre-processing of the data</a>
-  <ul>
-<li>
-<a href="#missing-value-handling" id="toc-missing-value-handling" class="nav-link" data-scroll-target="#missing-value-handling"><span class="header-section-number">4.1</span> Missing value Handling</a>
-  <ul class="collapse">
-<li><a href="#missing-value-exploration-and-visualization" id="toc-missing-value-exploration-and-visualization" class="nav-link" data-scroll-target="#missing-value-exploration-and-visualization"><span class="header-section-number">4.1.1</span> Missing value exploration and visualization</a></li>
-  <li><a href="#missing-data-filterting" id="toc-missing-data-filterting" class="nav-link" data-scroll-target="#missing-data-filterting"><span class="header-section-number">4.1.2</span> Missing data filterting</a></li>
-  <li><a href="#missing-data-imputation" id="toc-missing-data-imputation" class="nav-link" data-scroll-target="#missing-data-imputation"><span class="header-section-number">4.1.3</span> Missing Data Imputation</a></li>
-  </ul>
-</li>
-  <li><a href="#log-transformation" id="toc-log-transformation" class="nav-link" data-scroll-target="#log-transformation"><span class="header-section-number">4.2</span> Log transformation</a></li>
-  <li><a href="#normalisation" id="toc-normalisation" class="nav-link" data-scroll-target="#normalisation"><span class="header-section-number">4.3</span> Normalisation</a></li>
-  </ul>
-</li>
-  <li>
-<a href="#exploratory-analysis" id="toc-exploratory-analysis" class="nav-link" data-scroll-target="#exploratory-analysis"><span class="header-section-number">5</span> Exploratory Analysis</a>
-  <ul>
-<li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages"><span class="header-section-number">5.1</span> Packages</a></li>
-  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization"><span class="header-section-number">5.2</span> Visualization</a></li>
-  </ul>
-</li>
-  <li>
-<a href="#statistical-analysis" id="toc-statistical-analysis" class="nav-link" data-scroll-target="#statistical-analysis"><span class="header-section-number">6</span> Statistical Analysis</a>
-  <ul>
-<li><a href="#limma-analysis" id="toc-limma-analysis" class="nav-link" data-scroll-target="#limma-analysis"><span class="header-section-number">6.1</span> LIMMA Analysis</a></li>
-  <li><a href="#limma-result-visualization" id="toc-limma-result-visualization" class="nav-link" data-scroll-target="#limma-result-visualization"><span class="header-section-number">6.2</span> LIMMA Result Visualization</a></li>
-  </ul>
-</li>
-  <li>
-<a href="#ensemble-feature-selection" id="toc-ensemble-feature-selection" class="nav-link" data-scroll-target="#ensemble-feature-selection"><span class="header-section-number">7</span> Ensemble Feature Selection</a>
-  <ul>
-<li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><span class="header-section-number">7.1</span> Data Preparation</a></li>
-  <li><a href="#performing-feature-selection" id="toc-performing-feature-selection" class="nav-link" data-scroll-target="#performing-feature-selection"><span class="header-section-number">7.2</span> Performing feature selection</a></li>
-  <li>
-<a href="#result-visualization" id="toc-result-visualization" class="nav-link" data-scroll-target="#result-visualization"><span class="header-section-number">7.3</span> Result Visualization</a>
-  <ul class="collapse">
-<li><a href="#cumulative-barplot" id="toc-cumulative-barplot" class="nav-link" data-scroll-target="#cumulative-barplot"><span class="header-section-number">7.3.1</span> cumulative barplot</a></li>
-  <li><a href="#dae-vs-efs-genes" id="toc-dae-vs-efs-genes" class="nav-link" data-scroll-target="#dae-vs-efs-genes"><span class="header-section-number">7.3.2</span> DAE vs EFS genes</a></li>
-  <li><a href="#roc-curve-for-model-evaluation" id="toc-roc-curve-for-model-evaluation" class="nav-link" data-scroll-target="#roc-curve-for-model-evaluation"><span class="header-section-number">7.3.3</span> ROC Curve for model evaluation</a></li>
+<li><a href="#cumulative-barplot" id="toc-cumulative-barplot" class="nav-link" data-scroll-target="#cumulative-barplot"><span class="header-section-number">10.3.1</span> cumulative barplot</a></li>
+  <li><a href="#dae-vs-efs-genes" id="toc-dae-vs-efs-genes" class="nav-link" data-scroll-target="#dae-vs-efs-genes"><span class="header-section-number">10.3.2</span> DAE vs EFS genes</a></li>
+  <li><a href="#roc-curve-for-model-evaluation" id="toc-roc-curve-for-model-evaluation" class="nav-link" data-scroll-target="#roc-curve-for-model-evaluation"><span class="header-section-number">10.3.3</span> ROC Curve for model evaluation</a></li>
   </ul>
 </li>
   </ul>
@@ -203,17 +219,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><div class="quarto-figure quarto-figure-center">
+</header><section id="summary" class="level2" data-number="1"><h2 data-number="1" class="anchored" data-anchor-id="summary">
+<span class="header-section-number">1</span> Summary</h2>
+<p>Proteomics have been extensively used in meat science to understand the biochemistry of meat quality. Identified and quantified proteomics data obtained through processing with analytical software tools, such as Mascot and Progenesis QI, among others, serve as a common starting point for meat scientists to analyze shotgun proteomic data. However, a standardized workflow for the downstream statistical analysis and visualization of these factorial design datasets is lacking.</p>
+<p>We propose a comprehensive downstream workflow and create a reproducible document for analyzing relative label-free quantified (LFQ) meat proteomics data that can be easily executed and shared, enhancing the reproducibility and accessibility for meat scientists.</p>
+</section><section id="nittiy-gritties" class="level2" data-number="2"><h2 data-number="2" class="anchored" data-anchor-id="nittiy-gritties">
+<span class="header-section-number">2</span> Nittiy-gritties</h2>
+<p>We followed similar anatomy as <a href="https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html">summarized experiments</a>. It has three parts, 1. <code>s_data</code> which consists of sample information, 2. <code>quant_data</code> is the quantitative data, 3. <code>f_data</code> is the feature data.</p>
+<p>User has to provide the <code>quant_data</code> and <code>s_data</code> in the correct format.</p>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure"><p><a href="https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html"><img src="images/Summarized Experiment.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="400"></a></p>
 </figure>
 </div>
-<section id="parameters" class="level2" data-number="1"><h2 data-number="1" class="anchored" data-anchor-id="parameters">
-<span class="header-section-number">1</span> Parameters</h2>
+</section><section id="parameters" class="level2" data-number="3"><h2 data-number="3" class="anchored" data-anchor-id="parameters">
+<span class="header-section-number">3</span> Parameters</h2>
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># do renv::restore() and renv:activate() as global setup</span></span>
 <span></span>
 <span><span class="co"># Import quant_data and sample_data as parameter</span></span>
-<span></span>
 <span><span class="va">feature_key_column</span> <span class="op">&lt;-</span> <span class="st">"Accession"</span> <span class="co"># comment it later</span></span>
 <span><span class="va">quantdata_key_column</span> <span class="op">&lt;-</span> <span class="st">"Accession"</span></span>
 <span><span class="va">sample_key_column</span> <span class="op">&lt;-</span> <span class="st">"sample"</span> <span class="co"># quantCols (suggested names callouts)</span></span>
@@ -221,6 +244,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co"># Instead only mention paths</span></span>
 <span><span class="va">quant_data_path</span> <span class="op">&lt;-</span> <span class="st">"data/quant_data.csv"</span></span>
 <span><span class="va">s_data_path</span> <span class="op">&lt;-</span> <span class="st">"data/sample_data.csv"</span></span>
+<span></span>
+<span><span class="co"># information from uniprot needed</span></span>
+<span><span class="va">information</span> <span class="op">&lt;-</span> <span class="st">"accession,gene_primary,gene_synonym,organism_name,protein_name,sequence"</span></span>
 <span></span>
 <span><span class="co"># refernce for columns in sample data,</span></span>
 <span></span>
@@ -234,68 +260,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co"># normalisation techniques</span></span>
 <span><span class="va">normalization_algo</span> <span class="op">&lt;-</span> <span class="st">"center.median"</span> <span class="co">#sum, max, center.mean, center.median, div.mean, div.median, diff.median, quantiles, quantiles.robust, vsn</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="importing-data" class="level2" data-number="2"><h2 data-number="2" class="anchored" data-anchor-id="importing-data">
-<span class="header-section-number">2</span> Importing Data</h2>
-<section id="gene-id-has-multiple-entries-one-cell" class="level3" data-number="2.1"><h3 data-number="2.1" class="anchored" data-anchor-id="gene-id-has-multiple-entries-one-cell">
-<span class="header-section-number">2.1</span> Gene ID has multiple entries one cell</h3>
-<section id="importing-raw-data" class="level4" data-number="2.1.1"><h4 data-number="2.1.1" class="anchored" data-anchor-id="importing-raw-data">
-<span class="header-section-number">2.1.1</span> Importing Raw Data</h4>
+</section><section id="importing-data" class="level2" data-number="4"><h2 data-number="4" class="anchored" data-anchor-id="importing-data">
+<span class="header-section-number">4</span> Importing Data</h2>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># #| eval: false</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># pacman::p_load(tidyverse) </span></span>
-<span><span class="co"># quant_data &lt;- read.csv("data/sample_lfq_data.csv")</span></span>
-<span><span class="co"># # s_data &lt;- read.csv("data/sample_metadata.csv") # sample_attributes</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section><section id="enrichingpopulating-the-feature-data" class="level4" data-number="2.1.2"><h4 data-number="2.1.2" class="anchored" data-anchor-id="enrichingpopulating-the-feature-data">
-<span class="header-section-number">2.1.2</span> Enriching/populating the feature data</h4>
-<div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># #| eval: false</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># # pacman::p_load(tidyverse, modules, httr, jsonlite) </span></span>
-<span><span class="co"># # multipleAccessionHandling &lt;- use("R/01_multipleAccessionHandling.R")</span></span>
-<span><span class="co"># source("R/01_multipleAccessionHandling.R")</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># f_quant_data &lt;- getCleanAccession(quant_data, "Accession", "\\b[A-Za-z0-9]+(?=\\|)")</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># r_data &lt;- populateGeneNamesfromMultipleAccession(f_data, "Accession", ",", information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", countAccession = countAccession, getGeneUniProt = getGeneUniProt, getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession, verbose_ = FALSE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section></section><section id="section" class="level3" data-number="2.2"><h3 data-number="2.2" class="anchored" data-anchor-id="section">
-<span class="header-section-number">2.2</span> </h3>
-<div class="cell">
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># #| eval: false</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># pacman::p_load(import, glue, httr, progress)</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># # write.csv(r_data[, c(1, 7:ncol(r_data))],"data/quant_data.csv", row.names = FALSE)</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># write.csv(r_data[, 1:6], "data/feature_data.csv", row.names = FALSE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section><section id="gene-id-has-single-entries-in-cell" class="level3" data-number="2.3"><h3 data-number="2.3" class="anchored" data-anchor-id="gene-id-has-single-entries-in-cell">
-<span class="header-section-number">2.3</span> Gene ID has single entries in cell</h3>
-<section id="importing-raw-data-1" class="level4" data-number="2.3.1"><h4 data-number="2.3.1" class="anchored" data-anchor-id="importing-raw-data-1">
-<span class="header-section-number">2.3.1</span> Importing Raw Data</h4>
-<div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">quant_data</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="va">quant_data_path</span><span class="op">)</span> <span class="co">#%&gt;%  # LFQ quantified data</span></span>
-<span>  <span class="co"># column_to_rownames(var = feature_key_column) # make the first column as row name</span></span>
+<span><span class="va">quant_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="va">quant_data_path</span><span class="op">)</span> <span class="co"># LFQ quantified data</span></span>
 <span></span>
-<span><span class="va">f_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"data/feature_data.csv"</span><span class="op">)</span> <span class="co">#%&gt;% # feature_attributes, primary key (unique) should be uniprot accession gene id</span></span>
-<span>  <span class="co"># column_to_rownames(var = feature_key_column)</span></span>
-<span></span>
-<span><span class="va">s_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="va">s_data_path</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span><span class="va">s_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="va">s_data_path</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="co"># sample data</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu">all_of</span><span class="op">(</span><span class="va">sample_key_column</span><span class="op">)</span>, <span class="va">make.names</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="co"># column_to_rownames(var = sample_key_column) %&gt;% </span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>quantCols <span class="op">=</span> <span class="fu">all_of</span><span class="op">(</span><span class="va">sample_key_column</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section></section><section id="preparing-a-qfeature-object" class="level2" data-number="3"><h2 data-number="3" class="anchored" data-anchor-id="preparing-a-qfeature-object">
-<span class="header-section-number">3</span> Preparing a QFeature object</h2>
-<section id="creating-the-qfeature-object" class="level3" data-number="3.1"><h3 data-number="3.1" class="anchored" data-anchor-id="creating-the-qfeature-object">
-<span class="header-section-number">3.1</span> Creating the QFeature object</h3>
+</section><section id="fetching-features" class="level2" data-number="5"><h2 data-number="5" class="anchored" data-anchor-id="fetching-features">
+<span class="header-section-number">5</span> fetching features</h2>
+<section id="gene-id-has-single-entries-in-cell" class="level3" data-number="5.1"><h3 data-number="5.1" class="anchored" data-anchor-id="gene-id-has-single-entries-in-cell">
+<span class="header-section-number">5.1</span> Gene ID has single entries in cell</h3>
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">BiocManager</span>, <span class="va">BiocStyle</span><span class="op">)</span> <span class="co"># will go to global environment</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/01_multipleAccessionHandling.R"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">f_data</span> <span class="op">&lt;-</span> <span class="fu">populateGeneNames</span><span class="op">(</span><span class="va">quant_data</span><span class="op">)</span> <span class="co"># fetching data from uniprot</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="gene-id-has-multiple-entries-in-cell" class="level3" data-number="5.2"><h3 data-number="5.2" class="anchored" data-anchor-id="gene-id-has-multiple-entries-in-cell">
+<span class="header-section-number">5.2</span> Gene ID has multiple entries in cell</h3>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span>, <span class="va">modules</span>, <span class="va">httr</span>, <span class="va">jsonlite</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/01_multipleAccessionHandling.R"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># fetching data for multiple accessions</span></span>
+<span><span class="va">mquant_data</span> <span class="op">&lt;-</span> <span class="fu">populateGeneNamesfromMultipleAccession</span><span class="op">(</span><span class="va">quant_data</span>, <span class="st">"Accession"</span>, <span class="st">","</span>, information <span class="op">=</span> <span class="va">information</span>, countAccession <span class="op">=</span> <span class="va">countAccession</span>, getGeneUniProt <span class="op">=</span> <span class="va">getGeneUniProt</span>, getGeneInformationforMultipleAccession <span class="op">=</span> <span class="va">getGeneInformationforMultipleAccession</span>, verbose_ <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">quant_data</span> <span class="op">&lt;-</span> <span class="va">mquant_data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu">str_split</span><span class="op">(</span><span class="va">information</span>, <span class="st">","</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span> <span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">r_data</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">f_data</span> <span class="op">&lt;-</span> <span class="va">mquant_data</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu">str_split</span><span class="op">(</span><span class="va">information</span>, <span class="st">","</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="preparing-a-qfeature-object" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="preparing-a-qfeature-object">
+<span class="header-section-number">6</span> Preparing a QFeature object</h2>
+<section id="creating-the-qfeature-object" class="level3" data-number="6.1"><h3 data-number="6.1" class="anchored" data-anchor-id="creating-the-qfeature-object">
+<span class="header-section-number">6.1</span> Creating the QFeature object</h3>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">BiocManager</span>, <span class="va">BiocStyle</span><span class="op">)</span> <span class="co"># will go to global environment</span></span>
 <span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">QFeatures</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># creating assayData</span></span>
@@ -312,24 +316,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  fnames <span class="op">=</span> <span class="va">feature_key_column</span>,</span>
 <span>  colData <span class="op">=</span> <span class="va">s_data</span>,</span>
 <span>  name <span class="op">=</span> <span class="va">initial_assayName</span></span>
-<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Checking arguments.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading data as a 'SummarizedExperiment' object.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Formatting sample annotations (colData).</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Formatting data as a 'QFeatures' object.</code></pre>
-</div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># adding column details also for summarizedExperiment object</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># adding column details also for summarizedExperiment object</span></span>
 <span><span class="fu">colData</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">colData</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="inspecting-the-qfeature-object" class="level3" data-number="3.2"><h3 data-number="3.2" class="anchored" data-anchor-id="inspecting-the-qfeature-object">
-<span class="header-section-number">3.2</span> Inspecting the QFeature Object</h3>
+</section><section id="inspecting-the-qfeature-object" class="level3" data-number="6.2"><h3 data-number="6.2" class="anchored" data-anchor-id="inspecting-the-qfeature-object">
+<span class="header-section-number">6.2</span> Inspecting the QFeature Object</h3>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist">
 <li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">QFeature object</a></li>
@@ -342,7 +335,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># QFeature object</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># QFeature object</span></span>
 <span><span class="va">data</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An instance of class QFeatures containing 1 assays:
@@ -352,7 +345,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># summarizedExperiment Object</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># summarizedExperiment Object</span></span>
 <span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>class: SummarizedExperiment 
@@ -369,7 +362,7 @@ colData names(3): quantCols Slaughter_Condition Feeding_Regime</code></pre>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="cell">
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># row data (features) information</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># row data (features) information</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu">rowData</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>DataFrame with 3 rows and 6 columns
@@ -388,7 +381,7 @@ A0A3Q1M9X9 MPFGLKLRRT...</code></pre>
 </div>
 <div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
 <div class="cell">
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># col data (samples) information</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># col data (samples) information</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span> <span class="co">#summarizedExperiment object</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>DataFrame with 3 rows and 3 columns
@@ -402,7 +395,7 @@ X4089_24_270    X4089_24_2...            NoStress          Lipid</code></pre>
 </div>
 <div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
 <div class="cell">
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># col data (samples) information</span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># col data (samples) information</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span> <span class="co"># QFeature object</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>DataFrame with 3 rows and 3 columns
@@ -416,7 +409,7 @@ X4089_24_270    X4089_24_2...            NoStress          Lipid</code></pre>
 </div>
 <div id="tabset-1-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-6-tab">
 <div class="cell">
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># assay data</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># assay data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           X4087_10_255_LT X4088_12_259 X4089_24_270 X4107_44_268_LT
@@ -443,7 +436,7 @@ Q3ZC07       19705375.8      19975536.4    9576858.0</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># QFeature object</span></span>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># QFeature object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span><span class="op">(</span><span class="st">" QFeature object"</span><span class="op">)</span></span>
 <span><span class="va">data</span></span>
 <span></span>
@@ -471,12 +464,12 @@ Q3ZC07       19705375.8      19975536.4    9576858.0</code></pre>
 </div>
 </div>
 </div>
-</section></section><section id="pre-processing-of-the-data" class="level2" data-number="4"><h2 data-number="4" class="anchored" data-anchor-id="pre-processing-of-the-data">
-<span class="header-section-number">4</span> Pre-processing of the data</h2>
-<section id="missing-value-handling" class="level3" data-number="4.1"><h3 data-number="4.1" class="anchored" data-anchor-id="missing-value-handling">
-<span class="header-section-number">4.1</span> Missing value Handling</h3>
-<section id="missing-value-exploration-and-visualization" class="level4" data-number="4.1.1"><h4 data-number="4.1.1" class="anchored" data-anchor-id="missing-value-exploration-and-visualization">
-<span class="header-section-number">4.1.1</span> Missing value exploration and visualization</h4>
+</section></section><section id="pre-processing-of-the-data" class="level2" data-number="7"><h2 data-number="7" class="anchored" data-anchor-id="pre-processing-of-the-data">
+<span class="header-section-number">7</span> Pre-processing of the data</h2>
+<section id="missing-value-handling" class="level3" data-number="7.1"><h3 data-number="7.1" class="anchored" data-anchor-id="missing-value-handling">
+<span class="header-section-number">7.1</span> Missing value Handling</h3>
+<section id="missing-value-exploration-and-visualization" class="level4" data-number="7.1.1"><h4 data-number="7.1.1" class="anchored" data-anchor-id="missing-value-exploration-and-visualization">
+<span class="header-section-number">7.1.1</span> Missing value exploration and visualization</h4>
 <div class="tabset-margin-container"></div><div class="panel-tabset nav-pills">
 <ul class="nav nav-tabs" role="tablist">
 <li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Descriptive Information</a></li>
@@ -486,7 +479,7 @@ Q3ZC07       19705375.8      19975536.4    9576858.0</code></pre>
 <div class="tab-content nav-pills">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Exploring missing values</span></span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Exploring missing values</span></span>
 <span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">zeroIsNA</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">NA_data</span> <span class="op">&lt;-</span> <span class="fu">nNA</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">NA_data</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -533,7 +526,7 @@ DataFrame with 32 rows and 3 columns
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Visualizing the whole data</span></span>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Visualizing the whole data</span></span>
 <span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">naniar</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">vis_miss</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, sort_miss <span class="op">=</span> <span class="cn">TRUE</span>, show_perc_col <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
@@ -549,7 +542,7 @@ DataFrame with 32 rows and 3 columns
 </div>
 <div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">col_with_missingval</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">col_with_missingval</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">initial_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">vis_miss</span><span class="op">(</span><span class="va">col_with_missingval</span>, sort_miss <span class="op">=</span> <span class="cn">TRUE</span>, show_perc <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
@@ -565,11 +558,11 @@ DataFrame with 32 rows and 3 columns
 </div>
 </div>
 </div>
-</section><section id="missing-data-filterting" class="level4" data-number="4.1.2"><h4 data-number="4.1.2" class="anchored" data-anchor-id="missing-data-filterting">
-<span class="header-section-number">4.1.2</span> Missing data filterting</h4>
+</section><section id="missing-data-filterting" class="level4" data-number="7.1.2"><h4 data-number="7.1.2" class="anchored" data-anchor-id="missing-data-filterting">
+<span class="header-section-number">7.1.2</span> Missing data filterting</h4>
 <p>Filtering features having more than 10% missing data.</p>
 <div class="cell">
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># removing missing value more than 10%, can be changed accordingly</span></span>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># removing missing value more than 10%, can be changed accordingly</span></span>
 <span></span>
 <span><span class="va">NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"NAfiltered_"</span>, <span class="va">initial_assayName</span><span class="op">)</span></span>
 <span></span>
@@ -585,37 +578,43 @@ DataFrame with 32 rows and 3 columns
 <span></span>
 <span>                 name <span class="op">=</span> <span class="va">NA_filtered_assayName</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="missing-data-imputation" class="level4" data-number="4.1.3"><h4 data-number="4.1.3" class="anchored" data-anchor-id="missing-data-imputation">
-<span class="header-section-number">4.1.3</span> Missing Data Imputation</h4>
-<section id="packages-needed" class="level5" data-number="4.1.3.1"><h5 data-number="4.1.3.1" class="anchored" data-anchor-id="packages-needed">
-<span class="header-section-number">4.1.3.1</span> Packages needed</h5>
+</section><section id="missing-data-imputation" class="level4" data-number="7.1.3"><h4 data-number="7.1.3" class="anchored" data-anchor-id="missing-data-imputation">
+<span class="header-section-number">7.1.3</span> Missing Data Imputation</h4>
+<section id="packages-needed" class="level5" data-number="7.1.3.1"><h5 data-number="7.1.3.1" class="anchored" data-anchor-id="packages-needed">
+<span class="header-section-number">7.1.3.1</span> Packages needed</h5>
 <div class="cell">
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">limma</span>, <span class="va">impute</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">limma</span>, <span class="va">impute</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="log-transformation-for-easy-visualization-of-imputation" class="level5" data-number="4.1.3.2"><h5 data-number="4.1.3.2" class="anchored" data-anchor-id="log-transformation-for-easy-visualization-of-imputation">
-<span class="header-section-number">4.1.3.2</span> Log transformation for easy visualization of imputation</h5>
+</section><section id="log-transformation-for-easy-visualization-of-imputation" class="level5" data-number="7.1.3.2"><h5 data-number="7.1.3.2" class="anchored" data-anchor-id="log-transformation-for-easy-visualization-of-imputation">
+<span class="header-section-number">7.1.3.2</span> Log transformation for easy visualization of imputation</h5>
 <div class="cell">
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">log_NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"log_"</span>,<span class="va">NA_filtered_assayName</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">log_NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"log_"</span>,<span class="va">NA_filtered_assayName</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">addAssay</span><span class="op">(</span><span class="va">data</span>,</span>
 <span>                 <span class="fu">logTransform</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">NA_filtered_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                 name <span class="op">=</span> <span class="va">log_NA_filtered_assayName</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="imputing-missing-values-and-visualization-modify-later" class="level5" data-number="4.1.3.3"><h5 data-number="4.1.3.3" class="anchored" data-anchor-id="imputing-missing-values-and-visualization-modify-later">
-<span class="header-section-number">4.1.3.3</span> Imputing missing values and visualization (modify later)</h5>
+</section><section id="imputing-missing-values-and-visualization-modify-later" class="level5" data-number="7.1.3.3"><h5 data-number="7.1.3.3" class="anchored" data-anchor-id="imputing-missing-values-and-visualization-modify-later">
+<span class="header-section-number">7.1.3.3</span> Imputing missing values and visualization (modify later)</h5>
 <div class="cell">
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/02_QFeature_related functions.R"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/02_QFeature_related functions.R"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># fix the function</span></span>
 <span><span class="fu">visualize_imputation_density</span><span class="op">(</span><span class="va">data</span>, </span>
-<span>                             protein_column <span class="op">=</span> <span class="va">NA_filtered_assayName</span>, </span>
+<span>                             assayName_ <span class="op">=</span> <span class="va">log_NA_filtered_assayName</span>, </span>
 <span>                             imputation_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"knn"</span>, <span class="st">"zero"</span>, <span class="st">"MinDet"</span>, <span class="st">"bpca"</span><span class="op">)</span>,</span>
 <span>                             colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"red"</span>, <span class="st">"blue"</span>, <span class="st">"steelblue"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span>
 <span>                             legend_position <span class="op">=</span> <span class="st">"topright"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="R-and-Bioconductor-based-Workflow-for-Downstream-Analysis-of-LFQ-Food-and-Meat-Proteomics-Data_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
-</section><section id="imputation-with-imputation_algorithm-mentioned-in-parameters" class="level5" data-number="4.1.3.4"><h5 data-number="4.1.3.4" class="anchored" data-anchor-id="imputation-with-imputation_algorithm-mentioned-in-parameters">
-<span class="header-section-number">4.1.3.4</span> Imputation with imputation_algorithm mentioned in parameters</h5>
+</div>
+</div>
+</section><section id="imputation-with-imputation_algorithm-mentioned-in-parameters" class="level5" data-number="7.1.3.4"><h5 data-number="7.1.3.4" class="anchored" data-anchor-id="imputation-with-imputation_algorithm-mentioned-in-parameters">
+<span class="header-section-number">7.1.3.4</span> Imputation with imputation_algorithm mentioned in parameters</h5>
 <div class="cell">
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">imputed_NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"imputed_"</span>, <span class="va">NA_filtered_assayName</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">imputed_NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"imputed_"</span>, <span class="va">NA_filtered_assayName</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">addAssay</span><span class="op">(</span><span class="va">data</span>,</span>
 <span>                 <span class="fu">impute</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">NA_filtered_assayName</span><span class="op">]</span><span class="op">]</span>, method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">imputation_algo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                 name <span class="op">=</span> <span class="va">imputed_NA_filtered_assayName</span></span>
@@ -624,35 +623,35 @@ DataFrame with 32 rows and 3 columns
 <pre><code>Imputing along margin 1 (features/rows).</code></pre>
 </div>
 </div>
-</section></section></section><section id="log-transformation" class="level3" data-number="4.2"><h3 data-number="4.2" class="anchored" data-anchor-id="log-transformation">
-<span class="header-section-number">4.2</span> Log transformation</h3>
+</section></section></section><section id="log-transformation" class="level3" data-number="7.2"><h3 data-number="7.2" class="anchored" data-anchor-id="log-transformation">
+<span class="header-section-number">7.2</span> Log transformation</h3>
 <div class="cell">
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">log_imputed_NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"log2_"</span>, <span class="va">imputed_NA_filtered_assayName</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">log_imputed_NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"log2_"</span>, <span class="va">imputed_NA_filtered_assayName</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">addAssay</span><span class="op">(</span><span class="va">data</span>,</span>
 <span>                 <span class="fu">logTransform</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">imputed_NA_filtered_assayName</span><span class="op">]</span><span class="op">]</span>, base <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>                 name <span class="op">=</span> <span class="va">log_imputed_NA_filtered_assayName</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="normalisation" class="level3" data-number="4.3"><h3 data-number="4.3" class="anchored" data-anchor-id="normalisation">
-<span class="header-section-number">4.3</span> Normalisation</h3>
-<section id="visualization-of-different-normalisation" class="level5" data-number="4.3.0.1"><h5 data-number="4.3.0.1" class="anchored" data-anchor-id="visualization-of-different-normalisation">
-<span class="header-section-number">4.3.0.1</span> Visualization of different `normalisation`</h5>
-</section><section id="applying-normalisation-to-our-dataset" class="level5" data-number="4.3.0.2"><h5 data-number="4.3.0.2" class="anchored" data-anchor-id="applying-normalisation-to-our-dataset">
-<span class="header-section-number">4.3.0.2</span> Applying `normalisation` to our dataset</h5>
+</section><section id="normalisation" class="level3" data-number="7.3"><h3 data-number="7.3" class="anchored" data-anchor-id="normalisation">
+<span class="header-section-number">7.3</span> Normalisation</h3>
+<section id="visualization-of-different-normalisation" class="level5" data-number="7.3.0.1"><h5 data-number="7.3.0.1" class="anchored" data-anchor-id="visualization-of-different-normalisation">
+<span class="header-section-number">7.3.0.1</span> Visualization of different `normalisation`</h5>
+</section><section id="applying-normalisation-to-our-dataset" class="level5" data-number="7.3.0.2"><h5 data-number="7.3.0.2" class="anchored" data-anchor-id="applying-normalisation-to-our-dataset">
+<span class="header-section-number">7.3.0.2</span> Applying `normalisation` to our dataset</h5>
 <div class="cell">
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">norm_log_imputed_NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"norm"</span>, <span class="va">log_imputed_NA_filtered_assayName</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">norm_log_imputed_NA_filtered_assayName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"norm"</span>, <span class="va">log_imputed_NA_filtered_assayName</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">addAssay</span><span class="op">(</span><span class="va">data</span>,</span>
 <span>                 <span class="fu">normalize</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">log_imputed_NA_filtered_assayName</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>                           method <span class="op">=</span> <span class="va">normalization_algo</span><span class="op">)</span>,</span>
 <span>                 name <span class="op">=</span> <span class="va">norm_log_imputed_NA_filtered_assayName</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section></section><section id="exploratory-analysis" class="level2" data-number="5"><h2 data-number="5" class="anchored" data-anchor-id="exploratory-analysis">
-<span class="header-section-number">5</span> Exploratory Analysis</h2>
-<section id="packages" class="level3" data-number="5.1"><h3 data-number="5.1" class="anchored" data-anchor-id="packages">
-<span class="header-section-number">5.1</span> Packages</h3>
+</section></section></section><section id="exploratory-analysis" class="level2" data-number="8"><h2 data-number="8" class="anchored" data-anchor-id="exploratory-analysis">
+<span class="header-section-number">8</span> Exploratory Analysis</h2>
+<section id="packages" class="level3" data-number="8.1"><h3 data-number="8.1" class="anchored" data-anchor-id="packages">
+<span class="header-section-number">8.1</span> Packages</h3>
 <div class="cell">
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span></span>
 <span>  <span class="va">ggplot2</span>, </span>
 <span>  <span class="co"># plotly, # for interactive plotting</span></span>
 <span>  <span class="va">glue</span>,</span>
@@ -660,10 +659,10 @@ DataFrame with 32 rows and 3 columns
 <span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/03_getDimensionalReduction.R"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="visualization" class="level3" data-number="5.2"><h3 data-number="5.2" class="anchored" data-anchor-id="visualization">
-<span class="header-section-number">5.2</span> Visualization</h3>
+</section><section id="visualization" class="level3" data-number="8.2"><h3 data-number="8.2" class="anchored" data-anchor-id="visualization">
+<span class="header-section-number">8.2</span> Visualization</h3>
 <div class="cell">
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># PCA</span></span>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># PCA</span></span>
 <span><span class="va">df_dimensionaReduction</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[[</span><span class="va">norm_log_imputed_NA_filtered_assayName</span><span class="op">]</span><span class="op">]</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">assay</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -684,7 +683,7 @@ DataFrame with 32 rows and 3 columns
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Defining PCs to plot </span></span>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Defining PCs to plot </span></span>
 <span></span>
 <span><span class="va">x</span> <span class="op">=</span> <span class="fl">1</span> <span class="co"># PC1</span></span>
 <span><span class="va">y</span> <span class="op">=</span> <span class="fl">2</span> <span class="co"># PC2</span></span>
@@ -724,7 +723,7 @@ DataFrame with 32 rows and 3 columns
 <span>           <span class="va">pca_data</span>, </span>
 <span>           <span class="va">label</span>, </span>
 <span>           <span class="va">labels</span>, </span>
-<span>           explained_variance <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span>
+<span>           explained_variance <span class="op">=</span> <span class="va">explained_variance</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">plot_list</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"fig_pca_Plot_"</span>, <span class="va">label</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/get.html">get</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"fig_pca_Plot_"</span>, <span class="va">label</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -746,7 +745,7 @@ DataFrame with 32 rows and 3 columns
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="cell">
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tsne</span><span class="op">)</span> <span class="co">#Rtsne,</span></span>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tsne</span><span class="op">)</span> <span class="co">#Rtsne,</span></span>
 <span></span>
 <span><span class="co"># Defining parameters to plot </span></span>
 <span><span class="va">x</span> <span class="op">=</span> <span class="fl">1</span></span>
@@ -787,6 +786,11 @@ DataFrame with 32 rows and 3 columns
 <span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">sample_dimensionaReduction</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># plot_list[[1]]</span></span>
+<span><span class="co"># ggsave("images/05_tSNE_stress_plot.pdf", dpi =1200)</span></span>
+<span><span class="co"># plot_list[[2]]</span></span>
+<span><span class="co"># ggsave("images/06_tSNE_fr_plot.pdf", dpi =1200)</span></span>
+<span></span>
 <span><span class="fu">grid.arrange</span><span class="op">(</span>grobs <span class="op">=</span> <span class="va">plot_list</span>, nrow <span class="op">=</span> <span class="va">n</span>, ncol <span class="op">=</span> <span class="va">p</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -798,7 +802,7 @@ DataFrame with 32 rows and 3 columns
 </div>
 <div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
 <div class="cell">
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">umap</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">umap</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Defining parameters to plot </span></span>
 <span><span class="va">x</span> <span class="op">=</span> <span class="fl">1</span></span>
@@ -835,6 +839,11 @@ DataFrame with 32 rows and 3 columns
 <span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">sample_dimensionaReduction</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># plot_list[[1]]</span></span>
+<span><span class="co"># ggsave("images/07_tSNE_stress_plot.pdf", dpi =1200)</span></span>
+<span><span class="co"># plot_list[[2]]</span></span>
+<span><span class="co"># ggsave("images/08_tSNE_fr_plot.pdf", dpi =1200)</span></span>
+<span></span>
 <span><span class="fu">grid.arrange</span><span class="op">(</span>grobs <span class="op">=</span> <span class="va">plot_list</span>, nrow <span class="op">=</span> <span class="va">n</span>, ncol <span class="op">=</span> <span class="va">p</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -846,12 +855,12 @@ DataFrame with 32 rows and 3 columns
 </div>
 </div>
 </div>
-</section></section><section id="statistical-analysis" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="statistical-analysis">
-<span class="header-section-number">6</span> Statistical Analysis</h2>
-<section id="limma-analysis" class="level3" data-number="6.1"><h3 data-number="6.1" class="anchored" data-anchor-id="limma-analysis">
-<span class="header-section-number">6.1</span> LIMMA Analysis</h3>
+</section></section><section id="statistical-analysis" class="level2" data-number="9"><h2 data-number="9" class="anchored" data-anchor-id="statistical-analysis">
+<span class="header-section-number">9</span> Statistical Analysis</h2>
+<section id="limma-analysis" class="level3" data-number="9.1"><h3 data-number="9.1" class="anchored" data-anchor-id="limma-analysis">
+<span class="header-section-number">9.1</span> LIMMA Analysis</h3>
 <div class="cell">
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">limma</span>, <span class="va">tidyverse</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">limma</span>, <span class="va">tidyverse</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/04_limma.R"</span><span class="op">)</span></span>
 <span><span class="co"># parameters</span></span>
 <span><span class="va">multiple_testing_adjusting_method</span> <span class="op">&lt;-</span> <span class="st">"none"</span> <span class="co"># possible methods: "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none", check p.adjust.methods for more.</span></span>
@@ -894,8 +903,8 @@ DataFrame with 32 rows and 3 columns
 <span></span>
 <span><span class="va">DAP_table</span> <span class="op">&lt;-</span> <span class="fu">getDAPlist</span><span class="op">(</span><span class="va">fit_contrasts_bayes</span>, <span class="va">contrasts_group</span>, information_DE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"logFC"</span>,<span class="st">"AveExpr"</span>, <span class="st">"P.Value"</span>,<span class="st">"adj.P.Val"</span><span class="op">)</span>, multiple_testing_adjusting_method <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="limma-result-visualization" class="level3" data-number="6.2"><h3 data-number="6.2" class="anchored" data-anchor-id="limma-result-visualization">
-<span class="header-section-number">6.2</span> LIMMA Result Visualization</h3>
+</section><section id="limma-result-visualization" class="level3" data-number="9.2"><h3 data-number="9.2" class="anchored" data-anchor-id="limma-result-visualization">
+<span class="header-section-number">9.2</span> LIMMA Result Visualization</h3>
 <div class="tabset-margin-container"></div><div class="panel-tabset nav-pills">
 <ul class="nav nav-tabs" role="tablist">
 <li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">LIMMA Result Table</a></li>
@@ -905,7 +914,7 @@ DataFrame with 32 rows and 3 columns
 <div class="tab-content nav-pills">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">reactable</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">reactable</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">feature_data</span> <span class="op">&lt;-</span> <span class="fu">rowData</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">norm_log_imputed_NA_filtered_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -923,7 +932,7 @@ DataFrame with 32 rows and 3 columns
   </script>
 </div>
 </div>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># for further analysis if gene name is not there we are replacing it with accession</span></span>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># for further analysis if gene name is not there we are replacing it with accession</span></span>
 <span><span class="va">DAP_table_feature_data</span> <span class="op">&lt;-</span> <span class="va">DAP_table_feature_data</span> <span class="op">%&gt;%</span> </span>
 <span>      <span class="fu">mutate</span><span class="op">(</span>Gene_primary <span class="op">=</span> <span class="fu">if_else</span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">Gene_primary</span><span class="op">)</span>,</span>
@@ -934,7 +943,7 @@ DataFrame with 32 rows and 3 columns
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="cell">
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Volcano Plot for Stress vs No Stress</span></span>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Volcano Plot for Stress vs No Stress</span></span>
 <span></span>
 <span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">ggplot2</span>,</span>
 <span>               <span class="va">extrafont</span>,</span>
@@ -950,6 +959,7 @@ DataFrame with 32 rows and 3 columns
 <span><span class="va">FactorLevel.2</span> <span class="op">&lt;-</span> <span class="st">"NoStress"</span></span>
 <span><span class="va">legend_title</span> <span class="op">=</span> <span class="st">"pre-slaughter \nstress condition"</span></span>
 <span></span>
+<span><span class="co"># ggsave("images/09_volcano_plot.pdf", dpi =1200)</span></span>
 <span></span>
 <span><span class="fu">getVolcanoPlot</span><span class="op">(</span><span class="va">DAP_table_factor</span>, <span class="va">FactorLevel.1</span>, <span class="va">FactorLevel.2</span>, mrlimit <span class="op">=</span> <span class="fl">1.2</span>, legend_title <span class="op">=</span> <span class="va">legend_title</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -967,7 +977,7 @@ DataFrame with 32 rows and 3 columns
 </div>
 <div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
 <div class="cell">
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">ggupset</span>, <span class="va">grid</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">ggupset</span>, <span class="va">grid</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/04_limma.R"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># This is for differences between feeding regime given stress and no stress</span></span>
@@ -1034,8 +1044,10 @@ DataFrame with 32 rows and 3 columns
 <span></span>
 <span></span>
 <span><span class="va">upset1</span> <span class="op">&lt;-</span> <span class="fu">getUpSetPlot</span><span class="op">(</span><span class="va">upSet_data_nostress</span>, title <span class="op">=</span> <span class="st">"A)"</span>, fill_color <span class="op">=</span> <span class="st">"#1F77B4"</span><span class="op">)</span></span>
+<span><span class="fu">ggsave</span><span class="op">(</span><span class="st">"plots/10_upset_stress_plot.pdf"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">upset2</span> <span class="op">&lt;-</span> <span class="fu">getUpSetPlot</span><span class="op">(</span><span class="va">upSet_data_stress</span>, title <span class="op">=</span> <span class="st">"B)"</span>, fill_color <span class="op">=</span> <span class="st">"#FF7F0E"</span><span class="op">)</span></span>
+<span><span class="fu">ggsave</span><span class="op">(</span><span class="st">"plots/11_upset_nostress_plot.pdf"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">grid.arrange</span><span class="op">(</span>grobs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">upset1</span>, <span class="va">upset2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -1049,13 +1061,13 @@ DataFrame with 32 rows and 3 columns
 </div>
 </div>
 <p>For further analysis if gene_id is not present that’s been replaced by Accession.</p>
-</section></section><section id="ensemble-feature-selection" class="level2" data-number="7"><h2 data-number="7" class="anchored" data-anchor-id="ensemble-feature-selection">
-<span class="header-section-number">7</span> Ensemble Feature Selection</h2>
+</section></section><section id="ensemble-feature-selection" class="level2" data-number="10"><h2 data-number="10" class="anchored" data-anchor-id="ensemble-feature-selection">
+<span class="header-section-number">10</span> Ensemble Feature Selection</h2>
 <p><code>EFS</code> package only support target variables with two levels. Here we will perform the analysis with factor <code>pre-slaughter stress condition</code> which has two levels a) limited stress (No Stress), b) additional stress (Stress). We will be using NA filtered and imputed columns.</p>
-<section id="data-preparation" class="level3" data-number="7.1"><h3 data-number="7.1" class="anchored" data-anchor-id="data-preparation">
-<span class="header-section-number">7.1</span> Data Preparation</h3>
+<section id="data-preparation" class="level3" data-number="10.1"><h3 data-number="10.1" class="anchored" data-anchor-id="data-preparation">
+<span class="header-section-number">10.1</span> Data Preparation</h3>
 <div class="cell">
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">EFS</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">EFS</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Preparing data for EFS</span></span>
 <span><span class="va">EFS_data</span> <span class="op">&lt;-</span> <span class="fu">assay</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">imputed_NA_filtered_assayName</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
@@ -1080,19 +1092,19 @@ DataFrame with 32 rows and 3 columns
 </div>
 </div>
 </div>
-</section><section id="performing-feature-selection" class="level3" data-number="7.2"><h3 data-number="7.2" class="anchored" data-anchor-id="performing-feature-selection">
-<span class="header-section-number">7.2</span> Performing feature selection</h3>
+</section><section id="performing-feature-selection" class="level3" data-number="10.2"><h3 data-number="10.2" class="anchored" data-anchor-id="performing-feature-selection">
+<span class="header-section-number">10.2</span> Performing feature selection</h3>
 <div class="cell">
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">efs</span> <span class="op">&lt;-</span> <span class="fu">ensemble_fs</span><span class="op">(</span>data <span class="op">=</span> <span class="va">EFS_data</span>, classnumber <span class="op">=</span> <span class="fl">1</span>,</span>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">efs</span> <span class="op">&lt;-</span> <span class="fu">ensemble_fs</span><span class="op">(</span>data <span class="op">=</span> <span class="va">EFS_data</span>, classnumber <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                   NA_threshold <span class="op">=</span> <span class="fl">0.2</span>, cor_threshold <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>                   runs <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="co">#, selection = rep(TRUE, 8)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="result-visualization" class="level3" data-number="7.3"><h3 data-number="7.3" class="anchored" data-anchor-id="result-visualization">
-<span class="header-section-number">7.3</span> Result Visualization</h3>
-<section id="cumulative-barplot" class="level4" data-number="7.3.1"><h4 data-number="7.3.1" class="anchored" data-anchor-id="cumulative-barplot">
-<span class="header-section-number">7.3.1</span> cumulative barplot</h4>
+</section><section id="result-visualization" class="level3" data-number="10.3"><h3 data-number="10.3" class="anchored" data-anchor-id="result-visualization">
+<span class="header-section-number">10.3</span> Result Visualization</h3>
+<section id="cumulative-barplot" class="level4" data-number="10.3.1"><h4 data-number="10.3.1" class="anchored" data-anchor-id="cumulative-barplot">
+<span class="header-section-number">10.3.1</span> cumulative barplot</h4>
 <div class="cell">
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/05_EFS.R"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/05_EFS.R"</span><span class="op">)</span></span>
 <span><span class="va">filter_by</span> <span class="op">=</span> <span class="fl">0.5</span></span>
 <span><span class="fu">barplot_efs</span><span class="op">(</span><span class="va">efs</span>, filter_by <span class="op">=</span> <span class="va">filter_by</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -1102,10 +1114,10 @@ DataFrame with 32 rows and 3 columns
 </div>
 </div>
 </div>
-</section><section id="dae-vs-efs-genes" class="level4" data-number="7.3.2"><h4 data-number="7.3.2" class="anchored" data-anchor-id="dae-vs-efs-genes">
-<span class="header-section-number">7.3.2</span> DAE vs EFS genes</h4>
+</section><section id="dae-vs-efs-genes" class="level4" data-number="10.3.2"><h4 data-number="10.3.2" class="anchored" data-anchor-id="dae-vs-efs-genes">
+<span class="header-section-number">10.3.2</span> DAE vs EFS genes</h4>
 <div class="cell">
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/04_limma.R"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/04_limma.R"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"R/05_EFS.R"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># parameter for the plots</span></span>
@@ -1123,27 +1135,19 @@ DataFrame with 32 rows and 3 columns
 [1] 32
 [1] 661</code></pre>
 </div>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># We will be taking genes which </span></span>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># We will be taking genes which </span></span>
 <span></span>
 <span></span>
 <span><span class="va">EFS_genes_filterby</span> <span class="op">&lt;-</span> <span class="va">DAP_table_feature_data</span><span class="op">[[</span><span class="va">quantdata_key_column</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">DAP_table_feature_data</span><span class="op">[[</span><span class="va">quantdata_key_column</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">efs</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">efs</span><span class="op">)</span><span class="op">&gt;</span><span class="va">filter_by</span><span class="op">]</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">EFS_volcano_data</span> <span class="op">&lt;-</span> <span class="va">DAP_table_feature_data</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">[[</span><span class="va">quantdata_key_column</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">EFS_genes_filterby</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">columns_for_volcanoplot</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
-ℹ Please use `all_of()` or `any_of()` instead.
-  # Was:
-  data %&gt;% select(columns_for_volcanoplot)
-
-  # Now:
-  data %&gt;% select(all_of(columns_for_volcanoplot))
-
-See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.</code></pre>
-</div>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">EFS_plot</span> <span class="op">&lt;-</span> <span class="fu">getVolcanoPlotEFS</span><span class="op">(</span><span class="va">DAP_table_factor</span>, <span class="va">FactorLevel.1</span>, <span class="va">FactorLevel.2</span>, mrlimit <span class="op">=</span> <span class="fl">1.2</span>, pValue_Limit<span class="op">=</span> <span class="fl">0.05</span>, legend_title <span class="op">=</span> <span class="va">legend_title</span>, additional_data <span class="op">=</span> <span class="va">EFS_volcano_data</span><span class="op">)</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="fu">all_of</span><span class="op">(</span><span class="va">columns_for_volcanoplot</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># include the filter_by</span></span>
+<span><span class="va">EFS_plot</span> <span class="op">&lt;-</span> <span class="fu">getVolcanoPlotEFS</span><span class="op">(</span><span class="va">DAP_table_factor</span>, <span class="va">FactorLevel.1</span>, <span class="va">FactorLevel.2</span>, mrlimit <span class="op">=</span> <span class="fl">1.2</span>, pValue_Limit<span class="op">=</span> <span class="fl">0.05</span>, legend_title <span class="op">=</span> <span class="va">legend_title</span>, additional_data <span class="op">=</span> <span class="va">EFS_volcano_data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#ggsave("images/13_EFS_plot2.pdf", dpi = 1200)</span></span>
 <span><span class="fu">grid.arrange</span><span class="op">(</span>grobs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">volcano_plot</span>,<span class="va">EFS_plot</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -1152,8 +1156,18 @@ See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.</co
 </div>
 </div>
 </div>
-</section><section id="roc-curve-for-model-evaluation" class="level4" data-number="7.3.3"><h4 data-number="7.3.3" class="anchored" data-anchor-id="roc-curve-for-model-evaluation">
-<span class="header-section-number">7.3.3</span> ROC Curve for model evaluation</h4>
+</section><section id="roc-curve-for-model-evaluation" class="level4" data-number="10.3.3"><h4 data-number="10.3.3" class="anchored" data-anchor-id="roc-curve-for-model-evaluation">
+<span class="header-section-number">10.3.3</span> ROC Curve for model evaluation</h4>
+<div class="cell">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Create a ROC Curve based on the output from efs</span></span>
+<span><span class="va">eval_tests</span> <span class="op">&lt;-</span> <span class="fu">efs_eval</span><span class="op">(</span>data <span class="op">=</span> <span class="va">EFS_data</span>, efs_table <span class="op">=</span> <span class="va">efs</span>,</span>
+<span>                       file_name <span class="op">=</span> <span class="st">"docs/Horn"</span>,</span>
+<span>                       classnumber <span class="op">=</span> <span class="fl">1</span>, NA_threshold <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>                       logreg <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                       permutation <span class="op">=</span> <span class="cn">TRUE</span>, p_num <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>                       variances <span class="op">=</span> <span class="cn">TRUE</span>, jaccard <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                       bs_num <span class="op">=</span> <span class="fl">100</span>, bs_percentage <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <!-- ## Enrichment -->
 <!-- # KEGG and SPIA -->
 <!-- # GO Enrichment -->
@@ -1249,7 +1263,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/somu796\.github\.io\/proteomics-workflow-food-and-meat-science\/R%20and%20Bioconductor%20based%20Workflow%20for%20Downstream%20Analysis%20of%20LFQ%20Food%20and%20Meat%20Proteomics%20Data\.html");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

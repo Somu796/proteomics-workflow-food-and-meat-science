@@ -1,7 +1,17 @@
 project:
-  title: "R and Bioconductor based Workflow for Downstream Analysis of LFQ Food and Meat Proteomics Data"
-  type: website
+  #title: "R and Bioconductor based Workflow for Downstream Analysis of LFQ Food and Meat Proteomics Data"
+  type: site
   output-dir: docs
+  
+website:
+  title: "Food and Meat Proteomics Downstream Analysis"
+  site-url: https://somu796.github.io/proteomics-workflow-food-and-meat-science/R%20and%20Bioconductor%20based%20Workflow%20for%20Downstream%20Analysis%20of%20LFQ%20Food%20and%20Meat%20Proteomics%20Data.html
+  favicon: "images/logo_food_data.png"
+  navbar: 
+    logo: "images/logo_header.png"
+    right:
+        - icon: github
+          href: https://github.com/Somu796
     
 execute: 
   cache: true

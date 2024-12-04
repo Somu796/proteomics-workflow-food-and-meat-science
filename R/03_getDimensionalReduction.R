@@ -33,8 +33,8 @@ generate_dimension_reduction_plot <- function(model, x, y, model_output_data, la
   if (tolower(model) == "pca") {
     p <- p +
       labs(
-        x = glue("Principal Component {x} ({explained_variance[x]}%)"),
-        y = glue("Principal Component {y} ({explained_variance[y]}%)")
+        x = glue("PC {x} ({explained_variance[x]}%)"),
+        y = glue("PC {y} ({explained_variance[y]}%)")
       )
     
   } else if (tolower(model) == "tsne"){
