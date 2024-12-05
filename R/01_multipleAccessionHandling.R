@@ -90,6 +90,11 @@ countAccession <-  function(gene_data, colName, delimiter, endsWith = FALSE, ver
   return(max_count)
 }
 
+gene_data <- quant_data
+colName <- "Accession"
+delimiter <- ""
+
+countAccession(gene_data, colName, delimiter)
 
 #' Accesses information about the gene ids from uniprot (helper)
 #' 
@@ -401,13 +406,10 @@ populateGeneNamesfromMultipleAccession <- function(gene_data,
   
 
 
-populateGeneNames <- function(gene_data,
-                              colName,
-                              delimiter,
-                              information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence",
-                              countAccession = countAccession,
-                              getGeneUniProt = getGeneUniProt,
-                              getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession,
+populateGeneNames <- function(gene_data, 
+                              colName, 
+                              delimiter = "", 
+                              information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", 
                               verbose_ = FALSE){
 
   # if (countAccession(gene_data, colName, delimiter, endsWith = FALSE, verbose_) > 1){
@@ -416,15 +418,25 @@ populateGeneNames <- function(gene_data,
   #   getGeneInformationforMultipleAccession(gene_data, colName, delimiter, information, countAccession, getGeneUniProt, verbose_)
   # }
   
-  uniprot_inform  <- getGeneInformationforMultipleAccession(gene_data,
-                                         colName,
-                                         delimiter = "", # redundant
-                                         information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence",
-                                         countAccession = countAccession,
-                                         getGeneUniProt = getGeneUniProt,
-                                         getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession,
-                                         verbose_ = FALSE)
-  return(uniprot_inform)
+  if(TRUE){ #countAccession(gene_data, colName, delimiter, endsWith = FALSE, verbose_) == 1
+    uniprot_inform  <- getGeneUniProt(gene_data[[colName]], 
+                                      information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", 
+                                      verbose_)
+    
+    colnames(uniprot_inform) = str_to_title(unlist(strsplit(information, ","))) #Changing column to more readable names and capitalize first letter
+    rownames(uniprot_inform) = NULL #Rownames converted to NULL
+    
+    quant_data <- gene_data
+    f_data <- uniprot_inform
+    
+  } else if (countAccession(gene_data, colName, delimiter, endsWith = FALSE, verbose_) > 1){
+    uniprot_inform <- populateGeneNamesfromMultipleAccession(f_data, "Accession", ",", information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", countAccession = countAccession, getGeneUniProt = getGeneUniProt, getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession, verbose_ = FALSE)
+    
+    quant_data <- uniprot_inform[, c(1, length(unlist(str_split(information, ",")))+1 :ncol(r_data))]
+    f_data <- uniprot_inform[, 1:length(unlist(str_split(information, ",")))]
+  }
+  
+  return(list(quant_data, f_data))
 
 }
   

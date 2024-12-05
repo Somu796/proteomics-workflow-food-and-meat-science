@@ -73,41 +73,20 @@ s_data <- read.csv(s_data_path) %>% # sample data
 
 ## fetching features
 
-### Gene ID has single entries in cell
+`populateGeneNames()` handles both single or multiple entries in the `Gene ID` cell.
 
 ```{r}
-#| eval: false
+#| message: false
 
 pacman::p_load(tidyverse)
 source("R/01_multipleAccessionHandling.R")
 
-f_data <- populateGeneNames(quant_data) # fetching data from uniprot
+features <- populateGeneNames(quant_data, "Accession", ",", information = information) # fetching data from uniprot
+
+quant_data <- features[[1]]
+f_data <- features[[2]]
 
 ```
-```{r}
-#| echo: false
-
-f_data <- read.csv("data/feature_data.csv")
-```
-
-
-### Gene ID has multiple entries in cell
-
-```{r}
-#| eval: false
-
-pacman::p_load(tidyverse, modules, httr, jsonlite)
-source("R/01_multipleAccessionHandling.R")
-
-# fetching data for multiple accessions
-mquant_data <- populateGeneNamesfromMultipleAccession(quant_data, "Accession", ",", information = information, countAccession = countAccession, getGeneUniProt = getGeneUniProt, getGeneInformationforMultipleAccession = getGeneInformationforMultipleAccession, verbose_ = FALSE)
-
-
-quant_data <- mquant_data[, c(1, length(unlist(str_split(information, ",")))+1 :ncol(r_data))]
-f_data <- mquant_data[, 1:length(unlist(str_split(information, ",")))]
-
-```
-
 
 ## Preparing a QFeature object
 
@@ -369,18 +348,19 @@ source("R/03_getDimensionalReduction.R")
 ### Visualization
 
 ```{r}
-# PCA
+# data preparation for dimension reduction
+## quantitative data
 df_dimensionaReduction <- data[[norm_log_imputed_NA_filtered_assayName]] %>% 
   assay() %>%
   t()
 
+## sample data
 sample_dimensionaReduction <- data[[norm_log_imputed_NA_filtered_assayName]] %>%
   colData() %>% 
   assay() %>% 
   as.data.frame()
 
 labels <- sample_dimensionaReduction %>% select(- "quantCols")
-
 ```
 
 ::: panel-tabset
@@ -439,7 +419,6 @@ suppressWarnings({
 
 # You can also extract plots individually as plot_list$scree_plot, and save with ggsave()
 grid.arrange(grobs = plot_list, nrow = n, ncol = p) 
-
 ```
 
 #### t-SNE
