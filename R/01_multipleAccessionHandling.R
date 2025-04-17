@@ -158,14 +158,14 @@ countAccession <- function(gene_data, colName, delimiter = "", endsWith = FALSE)
 #' 
 #' Identifies gene IDs that have been merged or replaced in UniProt
 #' 
-#' @param Accession Vector of gene accession numbers
+#' @param accession_ Vector of gene accession numbers
 #' @return Data frame with original and new accession numbers
 #' @export
-getMergedGeneNames <- function(Accession) {
+getMergedGeneNames <- function(accession_) {
   new_accession_list <- c()
   base_url <- "https://www.uniprot.org/uniprot/"
   
-  new_accession_list <- sapply(Accession, function(acc) {
+  new_accession_list <- sapply(accession_, function(acc) {
     query_url <- paste0(base_url, acc, ".json")
     response <- GET(query_url)
     
@@ -177,25 +177,25 @@ getMergedGeneNames <- function(Accession) {
     return(NA)
   })
   
-  data.frame(Accession = Accession, new_Accession = new_accession_list)
+  data.frame(accession = accession_, new_Accession = new_accession_list)
 }
 
 #' Fetch Individual UniProt Data (helper function)
 #' 
 #' Retrieves data for a single accession from UniProt
 #' 
-#' @param accession Single UniProt accession number
+#' @param accession_ Single UniProt accession number
 #' @param information Desired information fields
 #' @param base_url Base UniProt API URL
 #' @param verbose Logical, whether to show detailed information
 #' @return Data frame with UniProt information or NULL
 #' @export
-fetchUniprotData <- function(accession, 
+fetchUniprotData <- function(accession_, 
                              information, 
                              base_url = "https://rest.uniprot.org/uniprotkb/search?query=accession:", 
                              verbose_ = FALSE) {
   # Construct and encode query URL
-  query_url <- paste0(base_url, accession, "&format=tsv&fields=", information)
+  query_url <- paste0(base_url, accession_, "&format=tsv&fields=", information)
   query_url <- URLencode(query_url)
   
   # Make API request with error handling
@@ -205,14 +205,14 @@ fetchUniprotData <- function(accession,
     # Validate response
     if (response$status_code != 200) {
       if (verbose_) {
-        message("Failed to fetch data for accession: ", accession, 
+        message("Failed to fetch data for accession: ", accession_, 
                 ". HTTP status: ", response$status_code)
       }
       return(NULL)
     }
     
     # Parse response
-    protein_data <- read.csv(text = content(response, "text"), 
+    protein_data <- read.csv(text = httr::content(response, "text", encoding = "UTF-8"), 
                              header = TRUE, 
                              sep = "\t", 
                              stringsAsFactors = FALSE)
@@ -221,7 +221,7 @@ fetchUniprotData <- function(accession,
   }, 
   error = function(e) {
     if (verbose_) {
-      message("Error processing accession ", accession, ": ", e$message)
+      message("Error processing accession ", accession_, ": ", e$message)
     }
     return(NULL)
   })
@@ -237,7 +237,7 @@ fetchUniprotData <- function(accession,
 #' @return Data frame with retrieved gene information
 #' @export
 getGeneUniProt <- function(accession_list, 
-                           information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", 
+                           information, 
                            verbose = FALSE) {
   message("Processing accessions, please wait...")
   
@@ -246,8 +246,8 @@ getGeneUniProt <- function(accession_list,
   progress_bar$tick(0)
   
   # Retrieve and combine data for each accession
-  combined_data <- lapply(accession_list, function(accession) {
-    protein_data <- fetchUniprotData(accession, information, verbose_ = verbose)
+  combined_data <- lapply(accession_list, function(accession_) {
+    protein_data <- fetchUniprotData(accession_, information, verbose_ = verbose)
     progress_bar$tick()
     
     if (!is.null(protein_data)) {
@@ -263,7 +263,84 @@ getGeneUniProt <- function(accession_list,
 
 # 4. Multiple Accession Processing Functions -----------------------------
 
-#' Process Gene Information for Multiple Accessions
+#' Get Gene Information for Multiple Accessions (helper))
+#' 
+#' Retrieves and processes UniProt information for multiple accession numbers
+#' 
+#' @param gene_data_separated Data frame with separated gene data
+#' @param colName Column name containing gene IDs
+#' @param delimiter Delimiter separating multiple gene IDs
+#' @param information UniProt information fields to retrieve
+#' @param verbose Logical, whether to show detailed information
+#' @return Processed UniProt information
+#' @export
+getGeneInformationforMultipleAccession <- function(gene_data_separated, 
+                                                   colName, 
+                                                   delimiter, 
+                                                   information, 
+                                                   verbose_ = FALSE) {
+  # Initialize empty data frame for UniProt names
+  uniprot_cols <- unlist(strsplit(information, ","))
+  uniprot_names <- data.frame(matrix(nrow = 0, ncol = length(uniprot_cols)))
+  colnames(uniprot_names) <- uniprot_cols
+  
+  # Count number of Accession columns
+  no_accession <- sum(grepl("accession", colnames(gene_data_separated)))
+  
+  # Process accessions iteratively
+  for (n in 1:(no_accession-1)) {
+    current_col <- paste0(colName, ".", n)
+    
+    # Retrieve UniProt information
+    current_uniprot_names <- getGeneUniProt(
+      as.vector(gene_data_separated[[current_col]]),
+      information
+    )
+    
+    # Capitalize column names
+    colnames(current_uniprot_names) <- uniprot_cols # change  str_to_title(uniprot_cols)
+    rownames(current_uniprot_names) <- NULL
+    
+    # Combine results
+    uniprot_names <- rbind(uniprot_names, current_uniprot_names)
+    
+    # Find entries with NA Gene_primary
+    na_gene_primary <- which(is.na(uniprot_names$gene_primary))
+    
+    # if (length(na_gene_primary) == 0) break
+    
+    # Prepare next iteration's data
+    gene_data_separated <- gene_data_separated[gene_data_separated[[current_col]] %in% uniprot_names$accession[na_gene_primary], ]
+    gene_data_separated <- gene_data_separated[!is.na(gene_data_separated[[paste0(colName, ".", n+1)]]), ]
+    
+    if (nrow(gene_data_separated) == 0) break
+    
+    uniprot_names = uniprot_names %>%
+      filter(get(colName) %in% setdiff(uniprot_names[[colName]], gene_data_separated[[current_col]]))
+  }
+  
+  # Handle merged genes
+  merged_accessions <- uniprot_names %>% 
+    filter(protein_name == "merged")
+  
+  if (nrow(merged_accessions) > 0) {
+    # Retrieve and process merged accessions
+    merged_info <- getMergedGeneNames(merged_accessions$accession)
+    merged_uniprot_info <- getGeneUniProt(merged_info$new_Accession, information) # debug the column new_Accession
+    
+    colnames(merged_uniprot_info) <- uniprot_cols # changed: str_to_title(uniprot_cols)
+    
+    # Update UniProt names
+    uniprot_names <- uniprot_names %>% 
+      filter(protein_name != "merged") %>%
+      rbind(merged_uniprot_info)
+  }
+  
+  return(uniprot_names)
+}
+
+
+#' Process Gene Information for Multiple Accessions (wrapper)
 #' 
 #' Handles gene data with multiple accession numbers in a single cell
 #' 
@@ -276,25 +353,37 @@ getGeneUniProt <- function(accession_list,
 #' @export
 populateGeneNamesfromMultipleAccession <- function(gene_data, 
                                                    colName, 
-                                                   delimiter = ",", 
-                                                   information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", 
+                                                   delimiter,
+                                                   split_char,
+                                                   information, 
                                                    verbose = FALSE) {
   # Validate inputs
   if (!is.data.frame(gene_data) || 
       !colName %in% names(gene_data) || 
-      nchar(delimiter) < 1) {
+      nchar(delimiter) < 1 ||
+      nchar(split_char)<1) {
     stop("Invalid input parameters. Check data frame, column name, and delimiter.")
   }
   
-  # Separate accessions into multiple columns
-  max_accessions <- countAccession(gene_data, colName, delimiter)
+  # data cleaning
+  gene_data[[colName]]<- unname(cleanAccessionColumn(gene_data, 
+                                              colName, 
+                                              delimiter = delimiter, 
+                                              split_char = split_char)[,1])
+  
+  # counting number of accessions
+  max_accessions <- stringr::str_count(gene_data[[colName]], ",") %>% max() + 1 # dependent of clean data
+  #print(max_accessions)
+  
   gene_data_separated <- gene_data %>%
     separate_wider_delim(
       cols = !!colName, 
-      delim = delimiter,
+      delim = ",", #dependent on cleandata
       names = paste0(colName, ".", 1:max_accessions),
-      too_few = "align_start"
+      too_few = "align_start" #,
+      # too_many = "debug"
     )
+  # print(gene_data_separated[, 1:12])
   
   # Retrieve UniProt information
   uniprot_info <- getGeneInformationforMultipleAccession(
@@ -317,86 +406,21 @@ populateGeneNamesfromMultipleAccession <- function(gene_data,
     select(-paste0(colName, "_no"))
   
   # Join UniProt information with original data
+  uniprot_info <- uniprot_info %>%
+    mutate(accession = as.character(accession))
+  processed_data <- processed_data %>%
+    mutate(accession = as.character(accession)) # was giving it as a logical 
+  
   enriched_data <- uniprot_info %>%
-    left_join(processed_data, by = join_by(Accession))
+    left_join(processed_data, by = "accession")
   
   # Remove deleted entries
   final_data <- enriched_data %>%
-    filter(!(is.na(Gene_primary) & Protein_name == "deleted"))
+    filter(!(is.na(gene_primary) & protein_name == "deleted"))
   
   return(final_data)
 }
 
-#' Get Gene Information for Multiple Accessions
-#' 
-#' Retrieves and processes UniProt information for multiple accession numbers
-#' 
-#' @param gene_data Data frame with separated gene data
-#' @param colName Column name containing gene IDs
-#' @param delimiter Delimiter separating multiple gene IDs
-#' @param information UniProt information fields to retrieve
-#' @param verbose Logical, whether to show detailed information
-#' @return Processed UniProt information
-#' @export
-getGeneInformationforMultipleAccession <- function(gene_data, 
-                                                   colName, 
-                                                   delimiter, 
-                                                   information, 
-                                                   verbose_ = FALSE) {
-  # Initialize empty data frame for UniProt names
-  uniprot_cols <- unlist(strsplit(information, ","))
-  uniprot_names <- data.frame(matrix(nrow = 0, ncol = length(uniprot_cols)))
-  colnames(uniprot_names) <- uniprot_cols
-  
-  # Count number of Accession columns
-  no_accession <- sum(grepl("Accession", colnames(gene_data)))
-  
-  # Process accessions iteratively
-  for (n in 1:(no_accession-1)) {
-    current_col <- paste0(colName, ".", n)
-    
-    # Retrieve UniProt information
-    current_uniprot_names <- getGeneUniProt(
-      as.vector(gene_data[[current_col]]), 
-      information
-    )
-    
-    # Capitalize column names
-    colnames(current_uniprot_names) <- str_to_title(uniprot_cols)
-    rownames(current_uniprot_names) <- NULL
-    
-    # Combine results
-    uniprot_names <- rbind(uniprot_names, current_uniprot_names)
-    
-    # Find entries with NA Gene_primary
-    na_gene_primary <- which(is.na(uniprot_names$Gene_primary))
-    
-    # Prepare next iteration's data
-    gene_data <- gene_data[gene_data[[current_col]] %in% uniprot_names$Accession[na_gene_primary], ]
-    gene_data <- gene_data[!is.na(gene_data[[paste0(colName, ".", n+1)]]), ]
-    
-    if (nrow(gene_data) == 0) break
-  }
-  
-  # Handle merged genes
-  merged_accessions <- uniprot_names %>% 
-    filter(Protein_name == "merged")
-  
-  if (nrow(merged_accessions) > 0) {
-    # Retrieve and process merged accessions
-    merged_info <- getMergedGeneNames(merged_accessions$Accession)
-    merged_uniprot_info <- getGeneUniProt(merged_info$new_Accession, information)
-    
-    colnames(merged_uniprot_info) <- str_to_title(uniprot_cols)
-    
-    # Update UniProt names
-    uniprot_names <- uniprot_names %>% 
-      filter(Protein_name != "merged") %>%
-      rbind(merged_uniprot_info)
-  }
-  
-  return(uniprot_names)
-}
 
 # 5. Main Wrapper Function -----------------------------------------------
 
@@ -413,24 +437,30 @@ getGeneInformationforMultipleAccession <- function(gene_data,
 #' @export
 populateGeneNames <- function(gene_data, 
                               colName, 
-                              delimiter = "", 
+                              delimiter = ";",
+                              split_char = "\\|",
                               information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", 
                               verbose = FALSE) {
   # Determine processing method based on number of accessions
-  accession_count <- countAccession(gene_data, colName, delimiter, verbose_ = verbose)
+  accession_count <- countAccession(gene_data, colName, delimiter)
   
   if (accession_count > 1) {
     # Multiple accessions
     processed_data <- populateGeneNamesfromMultipleAccession(
-      gene_data, 
-      colName, 
-      delimiter, 
-      information, 
+      gene_data = gene_data,      
+      colName = colName,
+      delimiter = delimiter,
+      split_char = split_char,
+      information = information,  
       verbose = verbose
     )
     
-    quant_data <- processed_data[, c(1, length(strsplit(information, ",")[[1]])+1:ncol(processed_data))]
+    quant_col_starts <- (length(strsplit(information, ",")[[1]])+1)
+    quant_col_ends <- ncol(processed_data)
+    
+    quant_data <- processed_data[, c(1, quant_col_starts:quant_col_ends)]
     uniprot_data <- processed_data[, 1:length(strsplit(information, ",")[[1]])]
+    
   } else {
     # Single accession
     uniprot_data <- getGeneUniProt(

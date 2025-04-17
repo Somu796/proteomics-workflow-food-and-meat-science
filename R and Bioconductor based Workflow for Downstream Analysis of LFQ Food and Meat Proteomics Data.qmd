@@ -19,10 +19,7 @@ We propose a comprehensive downstream workflow and create a reproducible documen
 
 ## Nittiy-gritties
 
-We followed similar anatomy as [summarized experiments](https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html). It has three parts,
-1. `s_data` which consists of sample information,
-2. `quant_data` is the quantitative data,
-3. `f_data` is the feature data.
+We followed similar anatomy as [summarized experiments](https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html). It has three parts, 1. `s_data` which consists of sample information, 2. `quant_data` is the quantitative data, 3. `f_data` is the feature data.
 
 User has to provide the `quant_data` and `s_data` in the correct format.
 
@@ -39,7 +36,7 @@ quantdata_key_column <- "Accession"
 sample_key_column <- "sample" # quantCols (suggested names callouts)
 
 # Instead only mention paths
-quant_data_path <- "data/quant_data.csv"
+quant_data_path <- "data/sample_lfq_data.csv"#"data/quant_data.csv"
 s_data_path <- "data/sample_data.csv"
 
 # information from uniprot needed
@@ -81,10 +78,19 @@ s_data <- read.csv(s_data_path) %>% # sample data
 pacman::p_load(tidyverse)
 source("R/01_multipleAccessionHandling.R")
 
-features <- populateGeneNames(quant_data, "Accession", ",", information = information) # fetching data from uniprot
+colnames(quant_data)[1] <- "accession" # make it modular
+features <- populateGeneNames(quant_data,              
+                  "accession", 
+                  delimiter = ";",
+                  split_char = "\\|",
+                  information = "accession,gene_primary,gene_synonym,organism_name,protein_name,sequence", 
+                  verbose = FALSE) # fetching data from uniprot
 
 quant_data <- features[[1]]
 f_data <- features[[2]]
+
+write.csv(quant_data, "data/quant_data_new.csv", row.names = FALSE)
+write.csv(f_data, "data/f_data_new.csv", row.names = FALSE)
 
 ```
 
